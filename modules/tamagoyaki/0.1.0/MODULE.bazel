@@ -1,0 +1,8 @@
+module(
+    name = "tamagoyaki",
+    version = "0.1.0",
+    bazel_compatibility = [">=7.2.1"],
+)
+
+bazel_dep(name = "rules_cc", version = "0.2.18")
+bazel_dep(name = "llvm-project", version = "17.0.3.bcr.4")

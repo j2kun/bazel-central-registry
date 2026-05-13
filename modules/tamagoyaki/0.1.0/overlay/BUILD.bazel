@@ -1,0 +1,172 @@
+load("@rules_cc//cc:defs.bzl", "cc_binary", "cc_library")
+load("@llvm-project//mlir:tblgen.bzl", "gentbl_cc_library", "td_library")
+
+package(default_visibility = ["//visibility:public"])
+
+# Equivalence TableGen
+td_library(
+    name = "EquivalenceTdFiles",
+    srcs = ["include/EquivalenceDialect.td"],
+    includes = ["include"],
+    deps = [
+        "@llvm-project//mlir:AttrTdFiles",
+        "@llvm-project//mlir:ControlFlowInterfacesTdFiles",
+        "@llvm-project//mlir:InferTypeOpInterfaceTdFiles",
+        "@llvm-project//mlir:OpBaseTdFiles",
+        "@llvm-project//mlir:PassBaseTdFiles",
+        "@llvm-project//mlir:SideEffectInterfacesTdFiles",
+    ],
+)
+
+gentbl_cc_library(
+    name = "EquivalenceGen",
+    tbl_outs = [
+        (
+            ["-gen-op-decls"],
+            "include/EquivalenceOps.h.inc",
+        ),
+        (
+            ["-gen-op-defs"],
+            "include/EquivalenceOps.cpp.inc",
+        ),
+        (
+            ["-gen-typedef-decls", "-typedefs-dialect=equivalence"],
+            "include/EquivalenceTypes.h.inc",
+        ),
+        (
+            ["-gen-typedef-defs", "-typedefs-dialect=equivalence"],
+            "include/EquivalenceTypes.cpp.inc",
+        ),
+        (
+            ["-gen-attrdef-decls", "-attrdefs-dialect=equivalence"],
+            "include/EquivalenceAttrs.h.inc",
+        ),
+        (
+            ["-gen-attrdef-defs", "-attrdefs-dialect=equivalence"],
+            "include/EquivalenceAttrs.cpp.inc",
+        ),
+        (
+            ["-gen-dialect-decls", "-dialect=equivalence"],
+            "include/EquivalenceDialect.h.inc",
+        ),
+        (
+            ["-gen-dialect-defs", "-dialect=equivalence"],
+            "include/EquivalenceDialect.cpp.inc",
+        ),
+        (
+            ["--gen-pass-decls", "-name=Equivalence"],
+            "include/EquivalencePasses.h.inc",
+        ),
+    ],
+    tblgen = "@llvm-project//mlir:mlir-tblgen",
+    td_file = "include/EquivalenceDialect.td",
+    deps = [":EquivalenceTdFiles"],
+)
+
+# Ematch TableGen
+td_library(
+    name = "EmatchTdFiles",
+    srcs = ["include/EmatchDialect.td"],
+    includes = ["include"],
+    deps = [
+        "@llvm-project//mlir:InferTypeOpInterfaceTdFiles",
+        "@llvm-project//mlir:OpBaseTdFiles",
+        "@llvm-project//mlir:PDLDialectTdFiles",
+        "@llvm-project//mlir:PassBaseTdFiles",
+        "@llvm-project//mlir:SideEffectInterfacesTdFiles",
+    ],
+)
+
+gentbl_cc_library(
+    name = "EmatchGen",
+    tbl_outs = [
+        (
+            ["-gen-op-decls"],
+            "include/EmatchOps.h.inc",
+        ),
+        (
+            ["-gen-op-defs"],
+            "include/EmatchOps.cpp.inc",
+        ),
+        (
+            ["-gen-dialect-decls", "-dialect=ematch"],
+            "include/EmatchDialect.h.inc",
+        ),
+        (
+            ["-gen-dialect-defs", "-dialect=ematch"],
+            "include/EmatchDialect.cpp.inc",
+        ),
+        (
+            ["--gen-pass-decls", "-name=Ematch"],
+            "include/EmatchPasses.h.inc",
+        ),
+    ],
+    tblgen = "@llvm-project//mlir:mlir-tblgen",
+    td_file = "include/EmatchDialect.td",
+    deps = [":EmatchTdFiles"],
+)
+
+# Libraries
+cc_library(
+    name = "TamagoyakiTiming",
+    srcs = ["src/TamagoyakiTiming.cpp"],
+    hdrs = ["include/TamagoyakiTiming.h"],
+    includes = ["include"],
+    deps = ["@llvm-project//mlir:IR"],
+)
+
+cc_library(
+    name = "EquivalenceDialect",
+    srcs = ["src/EquivalenceDialect.cpp"],
+    hdrs = [
+        "include/EquivalenceDialect.h",
+        "include/EquivalenceUtils.h",
+        "include/EquivalenceCAPI.h",
+    ],
+    includes = ["include"],
+    deps = [
+        ":EquivalenceGen",
+        ":TamagoyakiTiming",
+        "@llvm-project//mlir:FuncDialect",
+        "@llvm-project//mlir:IR",
+        "@llvm-project//mlir:InferTypeOpInterface",
+    ],
+)
+
+cc_library(
+    name = "EmatchDialect",
+    srcs = [
+        "src/EmatchDialect.cpp",
+        "src/Utils/ClassOpUnionFind.cpp",
+        "src/Utils/HashConsPatternRewriter.cpp",
+        "src/Utils/MutableScopedHashTable.cpp",
+    ],
+    hdrs = [
+        "include/EmatchDialect.h",
+        "include/EmatchUtils.h",
+        "include/Utils/ClassOpUnionFind.h",
+        "include/Utils/HashConsPatternRewriter.h",
+        "include/Utils/MutableScopedHashTable.h",
+    ],
+    includes = ["include"],
+    deps = [
+        ":EmatchGen",
+        ":EquivalenceDialect",
+        ":TamagoyakiTiming",
+        "@llvm-project//mlir:IR",
+        "@llvm-project//mlir:PDLInterpDialect",
+    ],
+)
+
+cc_library(
+    name = "EquivalenceCAPI",
+    srcs = ["src/EquivalenceCAPI.cpp"],
+    hdrs = ["include/EquivalenceCAPI.h"],
+    includes = ["include"],
+    deps = [
+        ":EquivalenceDialect",
+        "@llvm-project//mlir:CAPIIR",
+    ],
+)
+
+

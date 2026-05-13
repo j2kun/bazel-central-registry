@@ -1,0 +1,9 @@
+{
+    "integrity": "sha256-1R7mZFOJjwF5qaDucqx75zL87pJjeFDGaxJbBY0DtrQ=",
+    "patch_strip": 0,
+    "url": "https://github.com/jumerckx/Tamagoyaki/archive/refs/tags/v0.1.0.tar.gz",
+    "strip_prefix": "Tamagoyaki-0.1.0",
+    "overlay": {
+        "BUILD.bazel": "sha256-JOZwiMh0ieZ0J1Ca1jq21BDhNMe1TGIyOcuzC+VG09c="
+    }
+}

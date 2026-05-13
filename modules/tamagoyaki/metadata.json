@@ -1,0 +1,17 @@
+{
+    "homepage": "https://github.com/jumerckx/Tamagoyaki/",
+    "maintainers": [
+        {
+            "github": "jkun",
+            "github_user_id": 5689480,
+            "name": "jkun"
+        }
+    ],
+    "repository": [
+        "github:jumerckx/Tamagoyaki"
+    ],
+    "versions": [
+        "0.1.0"
+    ],
+    "yanked_versions": {}
+}
